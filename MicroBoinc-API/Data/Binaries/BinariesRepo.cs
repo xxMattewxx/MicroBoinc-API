@@ -2,6 +2,8 @@
 using MicroBoincAPI.Dtos.Binaries;
 using MicroBoincAPI.Dtos.Projects;
 using MicroBoincAPI.Models.Binaries;
+using MicroBoincAPI.Models.Platforms;
+using MicroBoincAPI.Models.Projects;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -23,6 +25,16 @@ namespace MicroBoincAPI.Data.Binaries
         public void CreateProjectBinary(ProjectBinary projectBinary)
         {
             _context.ProjectsBinaries.Add(projectBinary);
+        }
+
+        public void DeprecateAllBinaries(Project project, Platform platform)
+        {
+            var matching = _context.ProjectsBinaries
+                .Where(x => x.ProjectID == project.ID)
+                .Where(x => x.PlatformID == platform.ID);
+            
+            foreach(var aux in matching)
+                aux.Deprecated = true;
         }
 
         public GetProjectsForPlatformsResponseDto GetProjectsBinariesForPlatforms(IEnumerable<long> platformsIDs)

@@ -53,9 +53,11 @@ namespace MicroBoincAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Task>()
-                .UseXminAsConcurrencyToken() //# of slots left
-                .HasIndex(x => new { x.ID, x.SlotsLeft });
+            var taskBuilder = modelBuilder.Entity<Task>()
+                .UseXminAsConcurrencyToken(); //# of slots left
+
+            taskBuilder.HasIndex(x => x.Status);
+            taskBuilder.HasIndex(x => new { x.ID, x.SlotsLeft });
 
             modelBuilder.Entity<Account>().UseXminAsConcurrencyToken(); //offset
             modelBuilder.Entity<LeaderboardEntry>().UseXminAsConcurrencyToken(); //points, validpoints, invalidpoints

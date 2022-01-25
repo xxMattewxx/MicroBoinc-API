@@ -12,6 +12,7 @@ namespace MicroBoincAPI.Data.Tasks
         public void CreateTask(Task task);
         public void CreateTasks(List<Task> tasks);
 
+        public IEnumerable<long> GetTaskIDsToValidate(long projectID);
         public IEnumerable<Task> RetrieveTaskOfGroups(AccountKey accountKey, IEnumerable<long> acceptedGroups, int count);
         public IEnumerable<Task> RetrieveTaskOfProjects(AccountKey accountKey, IEnumerable<long> acceptedProjects, int count);
 

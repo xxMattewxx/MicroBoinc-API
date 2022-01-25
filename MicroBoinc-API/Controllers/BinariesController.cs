@@ -62,6 +62,7 @@ namespace MicroBoincAPI.Controllers
                 Priority = dto.Priority.Value
             };
 
+            _binariesRepo.DeprecateAllBinaries(project, platform);
             _binariesRepo.CreateProjectBinary(ret);
             _binariesRepo.SaveChanges();
 

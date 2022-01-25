@@ -27,6 +27,14 @@ namespace MicroBoincAPI.Data.Tasks
             _context.Tasks.AddRange(tasks);
         }
 
+        public IEnumerable<long> GetTaskIDsToValidate(long projectID)
+        {
+            return _context.Tasks
+                .Where(x => x.Status == TaskStatus.PendingValidation)
+                .Where(x => x.ProjectID == projectID)
+                .Select(x => x.ID);
+        }
+
         public IEnumerable<Task> RetrieveTaskOfGroups(AccountKey accountKey, IEnumerable<long> acceptedGroups, int count)
         {
             var userAssignmentsTaskIDs = _context.Assignments
