@@ -18,6 +18,7 @@ using MicroBoincAPI.Data.Leaderboards;
 using System;
 using System.Collections.Generic;
 using MicroBoincAPI.Data.Tasks;
+using System.IO;
 
 namespace MicroBoincAPI.Controllers
 {
@@ -76,7 +77,7 @@ namespace MicroBoincAPI.Controllers
         [HttpGet]
         [Authorize]
         [Route("ByTaskID/{taskID}")]
-        public ActionResult<IEnumerable<ResultReadDto>> GetResultsForTaskResponseDto (long taskID)
+        public ActionResult<IEnumerable<ResultReadDto>> GetResultsForTask(long taskID)
         {
             var key = this.GetLoggedInKey();
             if (!key.IsRoot || key.IsWeak)
@@ -84,6 +85,19 @@ namespace MicroBoincAPI.Controllers
 
             var results = _repository.GetResultsForTask(taskID);
             return Ok(_mapper.Map<IEnumerable<ResultReadDto>>(results));
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("ByProjectID/{projectID}")]
+        public void GetResultsForProject(long projectID)
+        {
+            var key = this.GetLoggedInKey();
+            if (!key.IsRoot || key.IsWeak)
+                return;
+
+            using var writer = new StreamWriter(Response.Body);
+            _repository.StreamResults(projectID, writer);
         }
 
         private Result ProcessResult(SubmitResultDto dto)
