@@ -20,6 +20,12 @@ namespace MicroBoincAPI.Data.Results
             _context.Results.Add(result);
         }
 
+        public IEnumerable<Result> GetResultsForTask(long taskID)
+        {
+            return _context.Results
+                .Where(x => x.TaskID == taskID);
+        }
+
         public void AttachEntity(object obj)
         {
             _context.Attach(obj);

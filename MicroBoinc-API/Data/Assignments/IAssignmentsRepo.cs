@@ -11,6 +11,7 @@ namespace MicroBoincAPI.Data.Assignments
 
         public Assignment GetAssignmentByID(long id);
 
+        public void UpdateStatus(long id, AssignmentStatus received);
         public void UpdateStatus(Assignment assignment, AssignmentStatus received);
 
         public void AttachEntity(object obj);

@@ -10,6 +10,7 @@ namespace MicroBoincAPI.Data.Results
     {
         public void AttachEntity(object obj);
         public void CreateResult(Result result);
+        public IEnumerable<Result> GetResultsForTask(long taskID);
 
         public void ResetContext();
         public bool SaveChanges();

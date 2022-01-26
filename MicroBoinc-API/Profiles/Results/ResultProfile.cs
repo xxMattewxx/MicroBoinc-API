@@ -9,6 +9,7 @@ namespace MicroBoincAPI.Profiles.Results
         public ResultProfile()
         {
             CreateMap<SubmitResultDto, Result>();
+            CreateMap<Result, ResultReadDto>();
             CreateMap<Result, SubmitResultResponseDto>();
         }
     }

@@ -38,16 +38,15 @@ namespace MicroBoincAPI.Data.Assignments
                 .FirstOrDefault(x => x.ID == id);
         }
 
+        public void UpdateStatus(long id, AssignmentStatus status)
+        {
+            var assignment = _context.Assignments.FirstOrDefault(x => x.ID == id);
+            UpdateStatus(assignment, status);
+        }
+
         public void UpdateStatus(Assignment assignment, AssignmentStatus status)
         {
             assignment.Status = status;
-            assignment.Task.ResultsLeft--;
-
-            if (status != AssignmentStatus.Received)
-                return;
-
-            if (assignment.Task.ResultsLeft == 0)
-                assignment.Task.Status = TaskStatus.PendingValidation;
         }
 
         public void AttachEntity(object obj)

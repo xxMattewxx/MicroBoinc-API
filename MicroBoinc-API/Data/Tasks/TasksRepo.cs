@@ -27,6 +27,33 @@ namespace MicroBoincAPI.Data.Tasks
             _context.Tasks.AddRange(tasks);
         }
 
+        public void IncreaseTaskSlots(long id)
+        {
+            var task = _context.Tasks.FirstOrDefault(x => x.ID == id);
+            task.SlotsLeft++;
+            task.ResultsLeft++;
+        }
+
+        public void DecreaseResultsLeft(long id)
+        {
+            var task = _context.Tasks.FirstOrDefault(x => x.ID == id);
+            DecreaseResultsLeft(task);
+        }
+
+        public void UpdateStatus(long id, TaskStatus status)
+        {
+            var task = _context.Tasks.FirstOrDefault(x => x.ID == id);
+            task.Status = status;
+        }
+
+        public void DecreaseResultsLeft(Task task)
+        {
+            task.ResultsLeft--;
+
+            if (task.ResultsLeft == 0)
+                task.Status = TaskStatus.PendingValidation;
+        }
+
         public IEnumerable<long> GetTaskIDsToValidate(long projectID)
         {
             return _context.Tasks
@@ -75,6 +102,11 @@ namespace MicroBoincAPI.Data.Tasks
         public bool SaveChanges()
         {
             return _context.SaveChanges() > 0;
+        }
+
+        public void ResetContext()
+        {
+            _context.ChangeTracker.Clear();
         }
     }
 }

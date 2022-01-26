@@ -16,6 +16,8 @@ using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using MicroBoincAPI.Data.Leaderboards;
 using System;
+using System.Collections.Generic;
+using MicroBoincAPI.Data.Tasks;
 
 namespace MicroBoincAPI.Controllers
 {
@@ -25,13 +27,15 @@ namespace MicroBoincAPI.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IAssignmentsRepo _assignmentsRepo;
+        private readonly ITasksRepo _tasksRepo;
         private readonly IResultsRepo _repository;
         private readonly ILeaderboardsRepo _leaderboardsRepo;
 
-        public ResultsController(IMapper mapper, IAssignmentsRepo assignmentsRepo, IResultsRepo repository, ILeaderboardsRepo leaderboardsRepo)
+        public ResultsController(IMapper mapper, IAssignmentsRepo assignmentsRepo, ITasksRepo tasksRepo, IResultsRepo repository, ILeaderboardsRepo leaderboardsRepo)
         {
             _mapper = mapper;
             _assignmentsRepo = assignmentsRepo;
+            _tasksRepo = tasksRepo;
             _repository = repository;
             _leaderboardsRepo = leaderboardsRepo;
         }
@@ -69,6 +73,19 @@ namespace MicroBoincAPI.Controllers
             while (true);
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("ByTaskID/{taskID}")]
+        public ActionResult<IEnumerable<ResultReadDto>> GetResultsForTaskResponseDto (long taskID)
+        {
+            var key = this.GetLoggedInKey();
+            if (!key.IsRoot || key.IsWeak)
+                return Unauthorized(new { Message = "Key must be root" });
+
+            var results = _repository.GetResultsForTask(taskID);
+            return Ok(_mapper.Map<IEnumerable<ResultReadDto>>(results));
+        }
+
         private Result ProcessResult(SubmitResultDto dto)
         {
             var assignment = _assignmentsRepo.GetAssignmentByID(dto.AssignmentID.Value);
@@ -77,6 +94,7 @@ namespace MicroBoincAPI.Controllers
             result.Assignment = assignment;
             result.Project = assignment.Task.Project;
 
+            _tasksRepo.DecreaseResultsLeft(assignment.TaskID);
             _repository.CreateResult(result);
             _leaderboardsRepo.AddPointsToAccount(assignment.AssignedTo, result.Project);
             _assignmentsRepo.UpdateStatus(result.Assignment, AssignmentStatus.Received);
