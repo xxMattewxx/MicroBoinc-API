@@ -98,7 +98,7 @@ namespace MicroBoincAPI.Data.Leaderboards
                 Project = entry.Project,
                 TotalPoints = entry.TotalPoints,
                 ValidatedPoints = entry.ValidatedPoints,
-                InvalidatedPoints = entry.ValidatedPoints,
+                InvalidatedPoints = entry.InvalidatedPoints,
                 SnapshotTime = DateTime.Now
             };
             CreateSnapshot(ret);

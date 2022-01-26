@@ -27,6 +27,11 @@ namespace MicroBoincAPI.Data.Tasks
             _context.Tasks.AddRange(tasks);
         }
 
+        public Task GetTaskByID(long id)
+        {
+            return _context.Tasks.FirstOrDefault(x => x.ID == id);
+        }
+
         public void IncreaseTaskSlots(long id)
         {
             var task = _context.Tasks.FirstOrDefault(x => x.ID == id);
@@ -59,7 +64,8 @@ namespace MicroBoincAPI.Data.Tasks
             return _context.Tasks
                 .Where(x => x.Status == TaskStatus.PendingValidation)
                 .Where(x => x.ProjectID == projectID)
-                .Select(x => x.ID);
+                .Select(x => x.ID)
+                .Take(5);
         }
 
         public IEnumerable<Task> RetrieveTaskOfGroups(AccountKey accountKey, IEnumerable<long> acceptedGroups, int count)

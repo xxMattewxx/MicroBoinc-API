@@ -41,7 +41,7 @@ namespace MicroBoincAPI.Controllers
                 try
                 {
                     OptimisticApplyValidationData(dto);
-                    return Ok();
+                    return Ok(new { Message = "Ok!" });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -74,8 +74,12 @@ namespace MicroBoincAPI.Controllers
             foreach (var id in dto.TaskIDsToValidate)
                 _tasksRepo.UpdateStatus(id, TaskStatus.Completed);
 
-            foreach (var id in dto.TaskIDsToRegenerate)
-                _tasksRepo.IncreaseTaskSlots(id);
+            foreach (var id in dto.TaskIDsToRegenerate) {
+                var task = _tasksRepo.GetTaskByID(id);
+                task.SlotsLeft++;
+                task.ResultsLeft++;
+                task.Status = TaskStatus.Available;
+            }
 
             _leaderboardsRepo.SaveChanges();
             _assignmentsRepo.SaveChanges();

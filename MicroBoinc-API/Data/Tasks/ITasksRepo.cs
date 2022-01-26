@@ -12,6 +12,8 @@ namespace MicroBoincAPI.Data.Tasks
         public void CreateTask(Task task);
         public void CreateTasks(List<Task> tasks);
 
+        public Task GetTaskByID(long id);
+
         public void IncreaseTaskSlots(long id);
         public void DecreaseResultsLeft(long id);
         public void UpdateStatus(long id, TaskStatus status);
