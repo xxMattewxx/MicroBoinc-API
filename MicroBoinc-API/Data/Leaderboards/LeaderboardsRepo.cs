@@ -92,10 +92,10 @@ namespace MicroBoincAPI.Data.Leaderboards
         {
             var ret = new LeaderboardSnapshot
             {
-                Key = entry.Key,
-                Account = entry.Account,
+                KeyID = entry.KeyID,
                 ExecutedAction = action,
-                Project = entry.Project,
+                AccountID = entry.AccountID,
+                ProjectID = entry.ProjectID,
                 TotalPoints = entry.TotalPoints,
                 ValidatedPoints = entry.ValidatedPoints,
                 InvalidatedPoints = entry.InvalidatedPoints,

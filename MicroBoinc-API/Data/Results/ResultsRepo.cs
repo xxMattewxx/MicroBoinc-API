@@ -34,13 +34,23 @@ namespace MicroBoincAPI.Data.Results
             connection.Open();
 
             using var command = connection.CreateCommand();
-            command.CommandText = $"SELECT \"StdOut\" FROM \"Results\" WHERE \"ProjectID\" = {projectID}";
+            command.CommandText = $"SELECT DISTINCT ON (\"Results\".\"TaskID\") \"StdOut\" " +
+                $"FROM \"Results\" " +
+                $"JOIN \"Assignments\" ON \"AssignmentID\" = \"Assignments\".\"ID\" " +
+                $"WHERE \"ProjectID\" = {projectID} AND \"Status\" = 4";
 
             using var reader = command.ExecuteReader();
 
             while(reader.Read())
             {
-                writer.WriteLine(reader.GetString(0));
+                var stdOut = reader.GetString(0);
+                if (string.IsNullOrEmpty(stdOut) || string.IsNullOrWhiteSpace(stdOut))
+                    continue;
+
+                if (stdOut == "\n" || stdOut == "\r\n")
+                    continue;
+
+                writer.WriteLine(stdOut);
             }
             writer.Flush();
         }

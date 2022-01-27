@@ -9,6 +9,7 @@ using MicroBoincAPI.Data.Leaderboards;
 using MicroBoincAPI.Models.Assignments;
 using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
+using System.Transactions;
 
 namespace MicroBoincAPI.Controllers
 {
@@ -81,9 +82,14 @@ namespace MicroBoincAPI.Controllers
                 task.Status = TaskStatus.Available;
             }
 
-            _leaderboardsRepo.SaveChanges();
-            _assignmentsRepo.SaveChanges();
-            _tasksRepo.SaveChanges();
+            using (var scope = new TransactionScope())
+            {
+                _leaderboardsRepo.SaveChanges();
+                _assignmentsRepo.SaveChanges();
+                _tasksRepo.SaveChanges();
+
+                scope.Complete();
+            }
         }
     }
 }

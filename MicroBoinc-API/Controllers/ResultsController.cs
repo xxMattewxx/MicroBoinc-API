@@ -1,24 +1,21 @@
 ﻿//THIS SHOULD BE MOVED TO ITS OWN MICROSERVICE SOON.
 
+using System.IO;
 using AutoMapper;
+using System.Transactions;
 using MicroBoincAPI.Utils;
 using Microsoft.AspNetCore.Mvc;
+using MicroBoincAPI.Data.Tasks;
+using System.Collections.Generic;
 using MicroBoincAPI.Data.Results;
-using Microsoft.AspNetCore.Authorization;
-using System.ComponentModel.DataAnnotations;
 using MicroBoincAPI.Dtos.Results;
 using MicroBoincAPI.Models.Results;
-using MicroBoincAPI.Data.Projects;
-using MicroBoincAPI.Data.Assignments;
-using MicroBoincAPI.Models.Assignments;
-using MicroBoincAPI.Models.Tasks;
-using System.Transactions;
 using Microsoft.EntityFrameworkCore;
+using MicroBoincAPI.Data.Assignments;
 using MicroBoincAPI.Data.Leaderboards;
-using System;
-using System.Collections.Generic;
-using MicroBoincAPI.Data.Tasks;
-using System.IO;
+using MicroBoincAPI.Models.Assignments;
+using Microsoft.AspNetCore.Authorization;
+using System.ComponentModel.DataAnnotations;
 
 namespace MicroBoincAPI.Controllers
 {
@@ -65,7 +62,7 @@ namespace MicroBoincAPI.Controllers
                     var ret = ProcessResult(dto);
                     return Ok(_mapper.Map<SubmitResultResponseDto>(ret));
                 }
-                catch (DbUpdateConcurrencyException) {
+                catch (DbUpdateException) {
                     _repository.ResetContext();
                     _assignmentsRepo.ResetContext();
                     _leaderboardsRepo.ResetContext();
