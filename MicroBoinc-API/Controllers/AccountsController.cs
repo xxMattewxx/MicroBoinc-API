@@ -5,6 +5,7 @@ using MicroBoincAPI.Data.Accounts;
 using MicroBoincAPI.Dtos.Accounts;
 using MicroBoincAPI.Models.Accounts;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MicroBoincAPI.Controllers
 {
@@ -22,6 +23,7 @@ namespace MicroBoincAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult<CreateAccountResponseDto> CreateAccount([Required, FromBody] CreateAccountDto dto)
         {
             var _key = this.GetLoggedInKey();
