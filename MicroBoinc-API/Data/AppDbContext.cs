@@ -60,7 +60,9 @@ namespace MicroBoincAPI.Data
             taskBuilder.HasIndex(x => new { x.ID, x.SlotsLeft });
 
             modelBuilder.Entity<Account>().UseXminAsConcurrencyToken(); //offset
-            modelBuilder.Entity<LeaderboardEntry>().UseXminAsConcurrencyToken(); //points, validpoints, invalidpoints
+            modelBuilder.Entity<LeaderboardEntry>()
+                .UseXminAsConcurrencyToken() //points, validpoints, invalidpoints
+                .HasIndex(x => new { x.KeyID, x.ProjectID }).IsUnique();
         }
     }
 }

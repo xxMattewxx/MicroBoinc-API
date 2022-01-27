@@ -11,6 +11,7 @@ namespace MicroBoincAPI.Data.Accounts
         //Accounts
         public void CreateAccount(Account account);
         public bool IsDiscordIDLinked(long id);
+        public Account GetAccountByDiscordID(long discordID);
 
         //Account keys
         public void CreateAccountKey(AccountKey key);

@@ -24,6 +24,10 @@ namespace MicroBoincAPI.Controllers
         [HttpPost]
         public ActionResult<CreateAccountResponseDto> CreateAccount([Required, FromBody] CreateAccountDto dto)
         {
+            var _key = this.GetLoggedInKey();
+            if (!_key.IsRoot || _key.IsWeak)
+                return Unauthorized(new { Message = "Key not authorized" });
+
             if (_repository.IsDiscordIDLinked(dto.DiscordID.Value))
                 return Conflict(new { Message = "An account already exists with this Discord ID." });
 

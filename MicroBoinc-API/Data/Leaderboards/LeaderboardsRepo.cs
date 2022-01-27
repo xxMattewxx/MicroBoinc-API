@@ -1,4 +1,6 @@
-﻿using MicroBoincAPI.Models.Accounts;
+﻿using AutoMapper;
+using MicroBoincAPI.Dtos.Leaderboards;
+using MicroBoincAPI.Models.Accounts;
 using MicroBoincAPI.Models.Leaderboard;
 using MicroBoincAPI.Models.Projects;
 using System;
@@ -48,9 +50,67 @@ namespace MicroBoincAPI.Data.Leaderboards
             _context.LeaderboardsSnapshots.Add(snapshot);
         }
 
-        public LeaderboardEntry GetEntryForKey(AccountKey key)
+        public IEnumerable<LeaderboardEntryReadDto> GetLeaderboardEntries(Project project, Account account)
+        {
+            var entries = _context.LeaderboardsEntries
+                .Where(x => x.AccountID == account.ID)
+                .Where(x => x.ProjectID == project.ID)
+                .Select(x => new LeaderboardEntryReadDto
+                {
+                    DisplayName = x.Key.DisplayName,
+                    TotalPoints = x.TotalPoints,
+                    ValidatedPoints = x.ValidatedPoints,
+                    InvalidatedPoints = x.InvalidatedPoints
+                });
+
+            return entries;
+        }
+
+        public IEnumerable<LeaderboardEntryReadDto> GetSummedLeaderboardEntries(Project project)
+        {
+            var entries = _context.LeaderboardsEntries
+                .Where(x => x.ProjectID == project.ID)
+                .ToList()
+                .GroupBy(x => x.AccountID)
+                .Select(x => new LeaderboardEntryReadDto { 
+                    DisplayName = x.Select(x => x.Account.DisplayName).FirstOrDefault(),
+                    TotalPoints = x.Sum(x => x.TotalPoints),
+                    ValidatedPoints = x.Sum(x => x.ValidatedPoints),
+                    InvalidatedPoints = x.Sum(x => x.InvalidatedPoints)
+                });
+
+            return entries;
+        }
+
+        public IEnumerable<LeaderboardSnapshotReadDto> GetHistoricalLeaderboard(Project project)
+        {
+            var entries = _context.LeaderboardsSnapshots
+                .Where(x => x.ProjectID == project.ID)
+                .ToList()
+                .GroupBy(x => x.AccountID)
+                .Select(x => new LeaderboardSnapshotReadDto
+                {
+                    DisplayName = x.Select(x => x.Account.DisplayName).FirstOrDefault(),
+                    ValidStamps = x
+                        .Where(x => x.ExecutedAction == LeaderboardActionEnum.Validated)
+                        .Select(x => (long)x.SnapshotTime.Subtract(DateTime.UnixEpoch).TotalSeconds),
+
+                    InvalidStamps = x
+                        .Where(x => x.ExecutedAction == LeaderboardActionEnum.Invalidated)
+                        .Select(x => (long)x.SnapshotTime.Subtract(DateTime.UnixEpoch).TotalSeconds),
+
+                    SubmittedStamps = x
+                        .Where(x => x.ExecutedAction == LeaderboardActionEnum.Submitted)
+                        .Select(x => (long)x.SnapshotTime.Subtract(DateTime.UnixEpoch).TotalSeconds)
+                });
+
+            return entries;
+        }
+
+        public LeaderboardEntry GetEntryForKey(AccountKey key, Project project)
         {
             return _context.LeaderboardsEntries
+                .Where(x => x.ProjectID == project.ID)
                 .FirstOrDefault(x => x.KeyID == key.ID);
         }
 
@@ -72,7 +132,7 @@ namespace MicroBoincAPI.Data.Leaderboards
         /* Internal functions */
         private LeaderboardEntry GetOrCreateEntry(AccountKey key, Project project)
         {
-            var entry = GetEntryForKey(key);
+            var entry = GetEntryForKey(key, project);
             if (entry == null) //first time adding points to the (keyid, projectid) pair
             {
                 entry = new LeaderboardEntry

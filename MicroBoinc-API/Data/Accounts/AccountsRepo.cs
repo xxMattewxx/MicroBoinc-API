@@ -27,6 +27,11 @@ namespace MicroBoincAPI.Data.Accounts
             return _context.Accounts.Any(x => x.DiscordID == id);
         }
 
+        public Account GetAccountByDiscordID(long discordID)
+        {
+            return _context.Accounts.FirstOrDefault(x => x.DiscordID == discordID);
+        }
+
         //Account keys
         public void CreateAccountKey(AccountKey key)
         {

@@ -82,14 +82,13 @@ namespace MicroBoincAPI.Controllers
                 task.Status = TaskStatus.Available;
             }
 
-            using (var scope = new TransactionScope())
-            {
-                _leaderboardsRepo.SaveChanges();
-                _assignmentsRepo.SaveChanges();
-                _tasksRepo.SaveChanges();
+            using var scope = new TransactionScope();
 
-                scope.Complete();
-            }
+            _leaderboardsRepo.SaveChanges();
+            _assignmentsRepo.SaveChanges();
+            _tasksRepo.SaveChanges();
+
+            scope.Complete();
         }
     }
 }
