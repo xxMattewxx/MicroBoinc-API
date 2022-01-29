@@ -47,6 +47,8 @@ namespace MicroBoincAPI
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+            services.AddCors();
+
             services.Configure<KestrelServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;
@@ -100,6 +102,13 @@ namespace MicroBoincAPI
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicroBoincAPI v1"));
             }
+
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyMethod();
+                builder.AllowAnyHeader();
+                builder.AllowAnyOrigin();
+            });
 
             app.UseRouting();
             app.UseAuthentication();

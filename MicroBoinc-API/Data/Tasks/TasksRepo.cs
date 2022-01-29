@@ -71,7 +71,7 @@ namespace MicroBoincAPI.Data.Tasks
         public IEnumerable<Task> RetrieveTaskOfGroups(AccountKey accountKey, IEnumerable<long> acceptedGroups, int count)
         {
             var userAssignmentsTaskIDs = _context.Assignments
-                .Where(x => x.AssignedToID == accountKey.ID)
+                .Where(x => x.AssignedTo.AccountID == accountKey.AccountID)
                 .Select(x => x.TaskID);
 
             var query = _context.Tasks
@@ -88,8 +88,8 @@ namespace MicroBoincAPI.Data.Tasks
         public IEnumerable<Task> RetrieveTaskOfProjects(AccountKey accountKey, IEnumerable<long> acceptedProjects, int count)
         {
             var userAssignmentsTaskIDs = _context.Assignments
-                .Where(x => x.AssignedTo.ID == accountKey.ID)
-                .Select(x => x.Task.ID);
+                .Where(x => x.AssignedTo.AccountID == accountKey.AccountID)
+                .Select(x => x.TaskID);
 
             return _context.Tasks
                 .OrderBy(x => x.ID)

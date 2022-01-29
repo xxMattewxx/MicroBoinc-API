@@ -3,6 +3,7 @@ using MicroBoincAPI.Dtos.Leaderboards;
 using MicroBoincAPI.Models.Accounts;
 using MicroBoincAPI.Models.Leaderboard;
 using MicroBoincAPI.Models.Projects;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,7 @@ namespace MicroBoincAPI.Data.Leaderboards
         public IEnumerable<LeaderboardEntryReadDto> GetLeaderboardEntries(Project project, Account account)
         {
             var entries = _context.LeaderboardsEntries
+                .Include(x => x.Key)
                 .Where(x => x.AccountID == account.ID)
                 .Where(x => x.ProjectID == project.ID)
                 .Select(x => new LeaderboardEntryReadDto
@@ -69,6 +71,7 @@ namespace MicroBoincAPI.Data.Leaderboards
         public IEnumerable<LeaderboardEntryReadDto> GetSummedLeaderboardEntries(Project project)
         {
             var entries = _context.LeaderboardsEntries
+                .Include(x => x.Account)
                 .Where(x => x.ProjectID == project.ID)
                 .ToList()
                 .GroupBy(x => x.AccountID)
@@ -85,7 +88,9 @@ namespace MicroBoincAPI.Data.Leaderboards
         public IEnumerable<LeaderboardSnapshotReadDto> GetHistoricalLeaderboard(Project project)
         {
             var entries = _context.LeaderboardsSnapshots
+                .Include(x => x.Account)
                 .Where(x => x.ProjectID == project.ID)
+                .OrderBy(x => x.SnapshotTime)
                 .ToList()
                 .GroupBy(x => x.AccountID)
                 .Select(x => new LeaderboardSnapshotReadDto
