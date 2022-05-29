@@ -29,11 +29,11 @@ namespace MicroBoincAPI.Data.Projects
                 .FirstOrDefault(x => x.ID == id);
         }
 
-        public double GetProjectProgress(long id)
+        public (int totalDone, int totalGenerated) GetProjectProgress(long id)
         {
             var tasks = _context.Tasks.Where(x => x.ProjectID == id);
-            var completedTasks = _context.Tasks.Where(x => x.Status == TaskStatus.Completed);
-            return completedTasks.Count() / (double)tasks.Count();
+            var completedTasks = tasks.Where(x => x.Status == TaskStatus.Completed);
+            return (completedTasks.Count(), tasks.Count());
         }
 
         //DEPRECATED / TODO

@@ -82,7 +82,14 @@ namespace MicroBoincAPI.Controllers
             var project = _repository.GetProjectByID(projectID);
             if (project == null)
                 return NotFound(new { Message = "Project not found" });
-            return Ok(_repository.GetProjectProgress(projectID));
+
+            var (totalDone, totalGenerated) = _repository.GetProjectProgress(projectID);
+            return Ok(new GetProgressDto
+            {
+                Name = project.Name,
+                TotalDone = totalDone,
+                TotalGenerated = totalGenerated
+            });
         }
     }
 }
