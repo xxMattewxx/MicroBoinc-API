@@ -66,5 +66,23 @@ namespace MicroBoincAPI.Controllers
             var ret = _binariesRepo.GetProjectsBinariesForPlatforms(dto.PlatformsIDs);
             return Ok(ret);
         }
+
+        [HttpGet("{projectID}")]
+        [Authorize]
+        public ActionResult<ProjectReadDto> GetProject(long projectID)
+        {
+            var project = _repository.GetProjectByID(projectID);
+            return Ok(_mapper.Map<ProjectReadDto>(project));
+        }
+
+        [HttpGet("{projectID}/Progress")]
+        [Authorize]
+        public ActionResult<double> GetProgress(long projectID)
+        {
+            var project = _repository.GetProjectByID(projectID);
+            if (project == null)
+                return NotFound(new { Message = "Project not found" });
+            return Ok(_repository.GetProjectProgress(projectID));
+        }
     }
 }

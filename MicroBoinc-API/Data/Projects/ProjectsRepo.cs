@@ -1,11 +1,10 @@
-﻿using MicroBoincAPI.Models.Binaries;
-using MicroBoincAPI.Models.Platforms;
+﻿using MicroBoincAPI.Models.Tasks;
+using MicroBoincAPI.Models.Binaries;
 using MicroBoincAPI.Models.Projects;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MicroBoincAPI.Data.Projects
 {
@@ -28,6 +27,13 @@ namespace MicroBoincAPI.Data.Projects
             return _context.Projects
                 .Include(x => x.Group)
                 .FirstOrDefault(x => x.ID == id);
+        }
+
+        public double GetProjectProgress(long id)
+        {
+            var tasks = _context.Tasks.Where(x => x.ProjectID == id);
+            var completedTasks = _context.Tasks.Where(x => x.Status == TaskStatus.Completed);
+            return completedTasks.Count() / (double)tasks.Count();
         }
 
         //DEPRECATED / TODO
