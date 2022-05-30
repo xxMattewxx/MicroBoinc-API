@@ -32,6 +32,13 @@ namespace MicroBoincAPI.Controllers
             _repository = repository;
         }
 
+        [HttpGet]
+        [Authorize]
+        public ActionResult<IEnumerable<long>> GetProjectIDs()
+        {
+            return Ok(_repository.GetProjectsIDs());
+        }
+
         [HttpPost]
         [Authorize]
         public ActionResult<CreateProjectResponseDto> CreateProject([Required, FromBody] CreateProjectDto dto)

@@ -22,6 +22,11 @@ namespace MicroBoincAPI.Data.Projects
             _context.Projects.Add(project);
         }
 
+        public IEnumerable<long> GetProjectsIDs()
+        {
+            return _context.Projects.Select(x => x.ID);
+        }
+
         public Project GetProjectByID(long id)
         {
             return _context.Projects
