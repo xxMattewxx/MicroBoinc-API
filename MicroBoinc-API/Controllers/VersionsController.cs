@@ -41,25 +41,5 @@ namespace MicroBoincAPI.Controllers
             var version = _versionsRepo.GetLatest();
             return Ok(_mapper.Map<VersionInfoReadDto>(version));
         }
-
-        [HttpPost]
-        [Authorize]
-        public ActionResult<VersionInfoReadDto> Create([FromBody, Required] VersionInfoCreateDto dto)
-        {
-            var key = this.GetLoggedInKey();
-            if (!key.IsRoot || key.IsWeak)
-                return Unauthorized(new { Message = "Platforms can only be added by root keys" });
-
-            var binary = _binariesRepo.GetBinaryByID(dto.BinaryID.Value);
-            if (binary == null)
-                return BadRequest(new { Message = "Binary not found" });
-
-            var model = _mapper.Map<VersionInfo>(dto);
-            model.Binary = binary;
-
-            _versionsRepo.CreateVersion(model);
-            _versionsRepo.SaveChanges();
-            return Ok(_mapper.Map<VersionInfoReadDto>(model));
-        }
     }
 }

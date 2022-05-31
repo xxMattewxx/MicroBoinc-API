@@ -2,8 +2,11 @@
 using MicroBoincAPI.Data.Binaries;
 using MicroBoincAPI.Data.Platforms;
 using MicroBoincAPI.Data.Projects;
+using MicroBoincAPI.Data.Versions;
 using MicroBoincAPI.Dtos.Binaries;
+using MicroBoincAPI.Dtos.Versions;
 using MicroBoincAPI.Models.Binaries;
+using MicroBoincAPI.Models.Versions;
 using MicroBoincAPI.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +24,15 @@ namespace MicroBoincAPI.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IBinariesRepo _binariesRepo;
+        private readonly IVersionsRepo _versionsRepo;
         private readonly IPlatformsRepo _platformsRepo;
         private readonly IProjectsRepo _projectsRepo;
 
-        public BinariesController(IMapper mapper, IBinariesRepo binariesRepo, IPlatformsRepo platformsRepo, IProjectsRepo projectsRepo)
+        public BinariesController(IMapper mapper, IBinariesRepo binariesRepo, IVersionsRepo versionsRepo, IPlatformsRepo platformsRepo, IProjectsRepo projectsRepo)
         {
             _mapper = mapper;
             _binariesRepo = binariesRepo;
+            _versionsRepo = versionsRepo;
             _platformsRepo = platformsRepo;
             _projectsRepo = projectsRepo;
         }
@@ -67,6 +72,22 @@ namespace MicroBoincAPI.Controllers
             _binariesRepo.SaveChanges();
 
             return Ok(_mapper.Map<ProjectBinaryReadDto>(ret));
+        }
+
+
+
+        [HttpPost("Client")]
+        [Authorize]
+        public ActionResult<VersionInfoReadDto> CreateClientVersionBinary([FromBody, Required] VersionInfoCreateDto dto)
+        {
+            var key = this.GetLoggedInKey();
+            if (!key.IsRoot || key.IsWeak)
+                return Unauthorized(new { Message = "Client versions can only be added by root keys" });
+
+            var model = _mapper.Map<VersionInfo>(dto);
+            _versionsRepo.CreateVersion(model);
+            _versionsRepo.SaveChanges();
+            return Ok(_mapper.Map<VersionInfoReadDto>(model));
         }
     }
 }
