@@ -9,6 +9,7 @@ using MicroBoincAPI.Data.Platforms;
 using MicroBoincAPI.Data.Projects;
 using MicroBoincAPI.Data.Results;
 using MicroBoincAPI.Data.Tasks;
+using MicroBoincAPI.Data.Versions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -84,6 +85,7 @@ namespace MicroBoincAPI
             services.AddScoped<IProjectsRepo, ProjectsRepo>();
             services.AddScoped<IResultsRepo, ResultsRepo>();
             services.AddScoped<ITasksRepo, TasksRepo>();
+            services.AddScoped<IVersionsRepo, VersionsRepo>();
 
             //APIs
             services.AddControllers();

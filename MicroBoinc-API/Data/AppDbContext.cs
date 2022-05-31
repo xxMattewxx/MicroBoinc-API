@@ -8,6 +8,7 @@ using MicroBoincAPI.Models.Platforms;
 using MicroBoincAPI.Models.Projects;
 using MicroBoincAPI.Models.Results;
 using MicroBoincAPI.Models.Tasks;
+using MicroBoincAPI.Models.Versions;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicroBoincAPI.Data
@@ -46,6 +47,9 @@ namespace MicroBoincAPI.Data
 
         //Tasks
         public DbSet<Task> Tasks { get; set; }
+
+        //Versions
+        public DbSet<VersionInfo> ClientsVersions { get; set; }
 
         public AppDbContext(DbContextOptions options) : base(options)
         {

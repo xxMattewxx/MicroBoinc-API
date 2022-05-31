@@ -11,6 +11,7 @@ namespace MicroBoincAPI.Data.Binaries
 {
     public interface IBinariesRepo
     {
+        public Binary GetBinaryByID(long id);
         public void CreateProjectBinary(ProjectBinary ret);
         public GetProjectsForPlatformsResponseDto GetProjectsBinariesForPlatforms(IEnumerable<long> platformsIDs);
         public void DeprecateAllBinaries(Project project, Platform platform);

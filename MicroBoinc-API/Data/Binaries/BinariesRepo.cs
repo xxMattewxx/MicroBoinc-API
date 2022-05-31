@@ -22,6 +22,11 @@ namespace MicroBoincAPI.Data.Binaries
             _context = context;
         }
 
+        public Binary GetBinaryByID(long id)
+        {
+            return _context.Binaries.FirstOrDefault(x => x.ID == id);
+        }
+
         public void CreateProjectBinary(ProjectBinary projectBinary)
         {
             _context.ProjectsBinaries.Add(projectBinary);
