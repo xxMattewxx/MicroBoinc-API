@@ -22,6 +22,14 @@ namespace MicroBoincAPI.Controllers
             _repository = repository;
         }
 
+        [HttpGet]
+        [Authorize]
+        public ActionResult<AccountReadDto> GetAccount()
+        {
+            var _key = this.GetLoggedInKey();
+            return Ok(_mapper.Map<AccountReadDto>(_key.Account));
+        }
+
         [HttpPost]
         [Authorize]
         public ActionResult<CreateAccountResponseDto> CreateAccount([Required, FromBody] CreateAccountDto dto)
