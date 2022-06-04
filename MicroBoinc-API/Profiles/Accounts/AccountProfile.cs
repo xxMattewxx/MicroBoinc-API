@@ -8,6 +8,7 @@ namespace MicroBoincAPI.Profiles.Accounts
     {
         public AccountProfile()
         {
+            CreateMap<Account, AccountReadDto>();
             CreateMap<CreateAccountDto, Account>();
         }
     }
