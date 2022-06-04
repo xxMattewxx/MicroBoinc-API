@@ -47,7 +47,6 @@ namespace MicroBoincAPI
                 DotEnv.Load("debug.env");
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
             services.AddCors();
 
             services.Configure<KestrelServerOptions>(options =>
@@ -101,9 +100,10 @@ namespace MicroBoincAPI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicroBoincAPI v1"));
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicroBoincAPI v1"));
 
             app.UseCors(builder =>
             {
