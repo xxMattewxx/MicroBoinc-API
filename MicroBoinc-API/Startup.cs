@@ -63,6 +63,8 @@ namespace MicroBoincAPI
                 })
                 .AddApiKeySupport(options => { });
 
+            services.AddMemoryCache();
+
             //Database and repositories
             services.AddDbContext<AppDbContext>(options =>
             {

@@ -9,21 +9,26 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication;
 using System.Text.Json;
+using Microsoft.Extensions.Caching.Memory;
+using MicroBoincAPI.Models.Accounts;
 
 namespace MicroBoincAPI.Authentication
 {
     public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationOptions>
     {
+        private static readonly AccountKey INVALID_KEY = new();
         private const string ApiKeyHeaderName = "Authorization";
         private readonly IAccountsRepo _accountsRepo;
+        private readonly IMemoryCache _memoryCache;
 
         public ApiKeyAuthenticationHandler(
             IOptionsMonitor<ApiKeyAuthenticationOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            ISystemClock clock, IAccountsRepo accountsRepo) : base(options, logger, encoder, clock)
+            ISystemClock clock, IAccountsRepo accountsRepo, IMemoryCache memoryCache) : base(options, logger, encoder, clock)
         {
             _accountsRepo = accountsRepo;
+            _memoryCache = memoryCache;
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -40,8 +45,13 @@ namespace MicroBoincAPI.Authentication
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
 
-            var key = _accountsRepo.GetKey(providedApiKey);
-            if (key == null)
+            if(!_memoryCache.TryGetValue(providedApiKey, out AccountKey key))
+            {
+                key = _accountsRepo.GetKey(providedApiKey) == null ? INVALID_KEY : null;
+                _memoryCache.Set(providedApiKey, key, TimeSpan.FromSeconds(30));
+            }
+            
+            if (key == INVALID_KEY)
                 return Task.FromResult(AuthenticateResult.NoResult());
 
             Context.Items["LoggedInUser"] = key;
