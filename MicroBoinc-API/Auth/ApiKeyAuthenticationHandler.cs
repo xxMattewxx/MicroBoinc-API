@@ -16,7 +16,6 @@ namespace MicroBoincAPI.Authentication
 {
     public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationOptions>
     {
-        private static readonly AccountKey INVALID_KEY = new();
         private const string ApiKeyHeaderName = "Authorization";
         private readonly IAccountsRepo _accountsRepo;
         private readonly IMemoryCache _memoryCache;
@@ -45,13 +44,8 @@ namespace MicroBoincAPI.Authentication
                 return Task.FromResult(AuthenticateResult.NoResult());
             }
 
-            if(!_memoryCache.TryGetValue(providedApiKey, out AccountKey key))
-            {
-                key = _accountsRepo.GetKey(providedApiKey) == null ? INVALID_KEY : null;
-                _memoryCache.Set(providedApiKey, key, TimeSpan.FromSeconds(30));
-            }
-            
-            if (key == INVALID_KEY)
+            var key = _accountsRepo.GetKey(providedApiKey);
+            if (key == null)
                 return Task.FromResult(AuthenticateResult.NoResult());
 
             Context.Items["LoggedInUser"] = key;
